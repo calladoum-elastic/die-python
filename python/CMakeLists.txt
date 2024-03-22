@@ -30,40 +30,32 @@ nanobind_add_module(
     ./src/die.cpp
 )
 
-
+add_dependencies(_die die Qt6::Core)
 target_compile_definitions(_die PRIVATE)
-# add_dependencies(_die Qt5::Core)
+
 target_include_directories(
     _die
     PRIVATE
         ${DIE_BASE_ROOT}
         ${DIE_PYTHON_ROOT_DIR}/inc
-        # ${qt5_SOURCE_DIR}
-        # $<TARGET_PROPERTY:${qt5_SOURCE_DIR},INCLUDE_DIRECTORIES>
-        # ${qt6_SOURCE_DIR}
-        # $<TARGET_PROPERTY:${qt6_SOURCE_DIR},INCLUDE_DIRECTORIES>
+        ${qt6_SOURCE_DIR}
 )
 target_link_directories(_die PRIVATE ${DIE_BASE_ROOT})
 
-if(MSVC)
-    target_link_libraries(_die PRIVATE die.lib)
-endif()
+# if(MSVC)
+#     target_link_libraries(_die PRIVATE die.lib)
+# endif()
 
 if(APPLE)
-    target_link_libraries(_die PRIVATE die "-framework CoreFoundation" -Wl -lm)
+    target_link_libraries(_die PRIVATE dl "-framework CoreFoundation" -Wl -lm)
 endif()
 
 if(UNIX)
-    target_link_libraries(_die PRIVATE die)
+    target_link_libraries(_die PRIVATE dl)
 endif()
 
 install(DIRECTORY die DESTINATION .)
-install(TARGETS _die LIBRARY DESTINATION die)
-install(DIRECTORY ${DIE_BASE_ROOT}/db DESTINATION die)
-install(FILES
-    ${DIE_BASE_ROOT}/die.h
-    ${DIE_BASE_ROOT}/die.dll
-    ${DIE_BASE_ROOT}/Qt5Core.dll
-    ${DIE_BASE_ROOT}/Qt5Script.dll
-    DESTINATION die
-)
+install(TARGETS _die DESTINATION die/)
+install(TARGETS die DESTINATION die/ EXCLUDE_FROM_ALL)
+install (DIRECTORY ${DIE_BASE_ROOT}/dep/Detect-It-Easy/db DESTINATION die/db)
+install (DIRECTORY ${DIE_BASE_ROOT}/dep/Detect-It-Easy/db_custom DESTINATION die/db)
